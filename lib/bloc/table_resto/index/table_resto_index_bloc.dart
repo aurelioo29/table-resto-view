@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter_pos_resto/repo/table_resto_repository.dart';
 import 'package:flutter_pos_resto/response/table_resto_response.dart';
-// import 'package:meta/meta.dart';
 import 'package:meta/meta.dart';
 //bloc untuk logic bisnis aplikasi
 
