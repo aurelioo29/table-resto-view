@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_pos_resto/ui/table_resto_list.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_pos_resto/bloc/menu_resto/pagination/menu_resto_pagination_bloc.dart';
+import 'package:flutter_pos_resto/ui/menu_resto_page.dart';
+// import 'package:flutter_pos_resto/ui/table_resto_list.dart';
+// import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +37,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TableRestoList(),
+      home: BlocProvider(
+        create: (context) => MenuRestoPaginationBloc()..add(GetMenuRestoPagination()),
+        child: MenuRestoPaginationPage(),
+      ),
     );
   }
 }
