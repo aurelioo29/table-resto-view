@@ -23,36 +23,32 @@ class _MenuRestoPaginationPageState extends State<MenuRestoPaginationPage> {
 
   @override
   Widget build(BuildContext context) {
-    bloc = BlocProvider.of<MenuRestoPaginationBloc>(context);
-    controller.addListener(onScroll);
+    String imageUrl = 'https://www.underconsideration.com/wordit/wordit_archives/0401_empty_Darrel_Austin.jpg';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Menu Resto List'),
+        title: Text('Menu Resto List'),
       ),
       body: BlocBuilder<MenuRestoPaginationBloc, MenuRestoPaginationState>(
         builder: (context, state) {
-          if (state is MenuRestoPaginationLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (state is MenuRestoPaginationError) {
-            return Center(
-              child: Text(state.message),
-            );
-          } else if (state is MenuRestoPaginationLoaded) {
+          if(state is MenuRestoPaginationLoading){
+            return const Center(child: CircularProgressIndicator(),);
+          } else if(state is MenuRestoPaginationError){
+            return Center(child: Text(state.message),);
+          } else if(state is MenuRestoPaginationLoaded){
+            if(state.listMenuRestoModel.isEmpty){
+              return Center(child: Text('Data masih kosong'),);
+            }
             return ListView.separated(
               controller: controller,
               itemBuilder: (_, index) {
-                if (index < state.listMenuRestoModel.length) {
-                  MenuRestoModel menuRestoModel = state
-                      .listMenuRestoModel[index];
+                if(index < state.listMenuRestoModel.length) {
+                  MenuRestoModel menuRestoModel = state.listMenuRestoModel[index];
                   return ListTile(
                     //cached_network_image
-                    leading: CircleAvatar(
-                      backgroundImage:
-                      NetworkImage(menuRestoModel.imageMenu.toString()),
+                    leading: CircleAvatar(backgroundImage: menuRestoModel.imageMenu != null ? NetworkImage(menuRestoModel.imageMenu.toString()) : NetworkImage(imageUrl)
                     ),
+                    trailing: Text(menuRestoModel.id.toString()),
                     title: Text(menuRestoModel.name.toString()),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,13 +61,9 @@ class _MenuRestoPaginationPageState extends State<MenuRestoPaginationPage> {
                 } else {
                   return Center(child: CircularProgressIndicator(),);
                 }
-
               },
-              separatorBuilder: (_, index) => const Divider(
-                thickness: 1,
-              ),
-              itemCount: state.hasReachedMax ?
-              state.listMenuRestoModel.length : state.listMenuRestoModel.length + 1,
+              separatorBuilder: (_, index) => Divider(thickness: 1,),
+              itemCount: state.hasReachedMax ? state.listMenuRestoModel.length : state.listMenuRestoModel.length + 1,
             );
           }
           return Container();
