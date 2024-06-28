@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_pos_resto/bloc/login/login_bloc.dart';
+import 'package:flutter_pos_resto/cubit/appsetting_cubit.dart';
 import 'package:flutter_pos_resto/params/auth_param.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,6 +12,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
   final _formKey = GlobalKey<FormState>();
   bool hidePassword = true;
   TextEditingController tecUsername = TextEditingController();
@@ -37,7 +39,8 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white70),
+                        color: Colors.white70
+                    ),
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -80,9 +83,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          hidePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                          hidePassword ? Icons.visibility_off : Icons
+                              .visibility,
                         ),
                         onPressed: () {
                           setState(() {
@@ -123,47 +125,35 @@ class _LoginPageState extends State<LoginPage> {
                     child: BlocConsumer<LoginBloc, LoginState>(
                       listener: (context, state) {
                         // listener mendengar perubahan state
-                        if (state is LoginSuccess) {
+                        if(state is LoginSuccess){
                           resetForm();
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                  state.loginResponse.message.toString())));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.loginResponse.message.toString())));
+                          context.read<AppsettingCubit>().checkSession();
                         } else if (state is LoginError) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(state.message.toString())));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message.toString())));
                         }
                       },
                       builder: (context, state) {
-                        if (state is LoginLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else if (state is LoginFatalError) {
-                          return Column(
-                            children: [
-                              Text(state.message.toString()),
-                              SizedBox(
-                                height: 18,
-                              ),
-                              FilledButton(
-                                  onPressed: () {
-                                    resetForm();
-                                    context.read<LoginBloc>().add(LoginReset());
-                                  },
-                                  child: Text("kembali"))
-                            ],
-                          );
+                        if(state is LoginLoading){
+                          return const Center(child: CircularProgressIndicator(),);
+                        } else if (state is LoginFatalError){
+                          return Column(children: [
+                            Text(state.message.toString()),
+                            SizedBox(height: 18,),
+                            FilledButton(onPressed: (){
+                              resetForm();
+                              context.read<LoginBloc>().add(LoginReset());
+                            },
+                                child: Text("kembali"))
+                          ],);
                         }
                         return ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               String username = tecUsername.text;
                               String password = tecPassword.text;
-                              final param = AuthParam(
-                                  username: username, password: password);
-                              context
-                                  .read<LoginBloc>()
-                                  .add(LoginPressed(param: param));
+                              final param = AuthParam(username: username, password: password);
+                              context.read<LoginBloc>().add(LoginPressed(param: param));
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -194,4 +184,5 @@ class _LoginPageState extends State<LoginPage> {
     tecUsername.text = "";
     tecPassword.text = "";
   }
+
 }
